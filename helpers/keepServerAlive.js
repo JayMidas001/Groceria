@@ -2,7 +2,7 @@ const http = require('http');
 const https = require('https'); // Include the https module
 
 const keepServerAlive = () => {
-    const url = 'https://testapi-c8ay.onrender.com/';
+    const url = 'https://groceria.onrender.com/';
 
     const protocol = url.startsWith('https') ? https : http; // Detect the correct protocol
 

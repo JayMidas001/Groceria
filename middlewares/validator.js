@@ -18,7 +18,7 @@ const schemas = {
       "any.required": "Full name is required.",
       "string.empty": "Full name cannot be empty.",
       "string.min": "Full name must be at least 6 characters long.",
-      "string.pattern.base": "Please provide both first and last names separated by a space.",
+      "string.pattern.base": "Please provide both first and last names separated by a space.(Whitespaces are not allowed.)",
       "string.base": "Full name cannot be empty."
       }),
     customerFirstName: validator.string()
