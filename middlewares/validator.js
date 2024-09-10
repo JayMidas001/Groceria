@@ -11,15 +11,15 @@ const schemas = {
       }),
       fullName: validator.string()
       .min(6)
-      .custom(value => value.trim())
-      .pattern(new RegExp("^[A-Za-z]+(\\s+[A-Za-z]+)+$"))
+      .custom(value => value.replace(/\s+/g, ' '))
+      .pattern(new RegExp("^[A-Za-z]+ [A-Za-z]+$"))
       .required()
       .messages({
-        "any.required": "Full name is required.",
-        "string.empty": "Full name cannot be empty.",
-        "string.min": "Full name must be at least 6 characters long.",
-        "string.pattern.base": "Please provide both first and last names separated by a space.",
-        "string.base": "Full name cannot be empty."
+      "any.required": "Full name is required.",
+      "string.empty": "Full name cannot be empty.",
+      "string.min": "Full name must be at least 6 characters long.",
+      "string.pattern.base": "Please provide both first and last names separated by a space.",
+      "string.base": "Full name cannot be empty."
       }),
     customerFirstName: validator.string()
     .min(3)

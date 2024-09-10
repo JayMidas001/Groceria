@@ -26,7 +26,7 @@ router.post(`/reset-password/:token`, resetPassword)
 
 router.get(`/make-admin/:userId`, makeAdmin)
 
-router.get(`/make-super/:userId`, makeSuperAdmin)
+router.get(`/make-super/:userId`, isSuperAdmin, makeSuperAdmin)
 
 router.get(`/getone/:userId`, getOneUser)
 

@@ -234,7 +234,8 @@ const getAllOrders = async (req, res) => {
 const getMerchantOrders = async (req, res) => {
     try {
       const merchantId  = req.user.userId
-  
+      if (!mongoose.Types.ObjectId.isValid(merchantId)) {
+        return res.status(400).json({ message: 'Invalid ID format.' });}
       // Find the merchant from the database
       const merchant = await merchantModel.findById(merchantId);
       if (!merchant) {

@@ -325,6 +325,8 @@ const changePassword = async (req, res) => {
 const updateMerchant = async (req, res) => {
     try {
       const { merchantId } = req.params;
+      if (!mongoose.Types.ObjectId.isValid(merchantId)) {
+        return res.status(400).json({ message: 'Invalid ID format.' });}
       const { businessName, email, phoneNumber, address, description } = req.body;
       const file = req.files.profileImage;
   
@@ -374,7 +376,8 @@ const updateMerchant = async (req, res) => {
 const getOneMerchant = async (req, res) => {
     try {
         const {merchantId} = req.params
-
+        if (!mongoose.Types.ObjectId.isValid(merchantId)) {
+            return res.status(400).json({ message: 'Invalid ID format.' });}
         const merchant = await merchModel.findById(merchantId)
         if(!merchant){
             return res.status(404).json(`Business not found.`)

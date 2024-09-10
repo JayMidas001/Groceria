@@ -315,6 +315,8 @@ const changePassword = async (req, res) => {
 const makeAdmin = async(req, res)=> {
     try {
         const {userId} = req.params
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid ID format.' });}
         const user = await userModel.findById(userId)
         if(!user){
             return res.status(404).json(`User with ID: ${userId} was not found`)
@@ -330,6 +332,8 @@ const makeAdmin = async(req, res)=> {
 const makeSuperAdmin = async(req, res)=> {
     try {
         const {userId} = req.params
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid ID format.' });}
         const user = await userModel.findById(userId)
         if(!user){
             return res.status(404).json(`User with ID ${userId} was not found`)
@@ -345,7 +349,8 @@ const makeSuperAdmin = async(req, res)=> {
 const getOneUser = async (req, res) => {
     try {
         const {userId} = req.params
-
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: 'Invalid ID format.' });}
         const user = await userModel.findById(userId)
         if(!user){
             return res.status(404).json(`User not found.`)

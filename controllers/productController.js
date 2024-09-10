@@ -16,6 +16,8 @@ const createProduct = async (req, res) => {
     }
 
     const { merchantId} = req.params;
+    if (!mongoose.Types.ObjectId.isValid(merchantId)) {
+        return res.status(400).json({ message: 'Invalid ID format.' });}
     const merchantStore = await merchantModel.findById(merchantId);
 
     if (!merchantStore) {
@@ -57,6 +59,8 @@ const createProduct = async (req, res) => {
 const getOneProduct = async (req, res) => {
   try {
     const { productId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+        return res.status(400).json({ message: 'Invalid ID format.' });}
     const product = await productModel.findById(productId).populate('merchant');
     if (!product) {
       return res.status(404).json('Product not found.');
@@ -83,6 +87,8 @@ const getOneProduct = async (req, res) => {
 const getAllForOneStore = async (req, res) => {
   try {
     const { merchantId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(merchantId)) {
+        return res.status(400).json({ message: 'Invalid ID format.' });}
     const merchantStore = await merchantModel.findById(merchantId).populate('products');
     if (!merchantStore) {
       return res.status(404).json("Store not found.");
@@ -118,6 +124,8 @@ const getAllProducts = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { productId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+        return res.status(400).json({ message: 'Invalid ID format.' });}
     const { productName, productPrice, productDescription } = req.body;
     
 
@@ -155,7 +163,8 @@ const updateProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
   try {
     const { productId } = req.params;
-
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
+        return res.status(400).json({ message: 'Invalid ID format.' });}
     // Find the product to delete
     const product = await productModel.findById(productId);
     if (!product) {
