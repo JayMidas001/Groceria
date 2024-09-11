@@ -159,6 +159,9 @@ const userLogin = async (req, res) => {
 const resendVerificationEmail = async (req, res) => {
     try {
         const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ message: "Email is required." });
+        }
         // Find the user with the email
         const user = await merchModel.findOne({ email:email.toLowerCase() });
         // Check if the user is still in the database
@@ -203,7 +206,9 @@ const forgotPassword = async (req, res) => {
     try {
         // Extract the email from the request body
         const { email } = req.body;
-
+        if (!email) {
+            return res.status(400).json({ message: "Email is required." });
+        }
         // Check if the email exists in the database
         const user = await merchModel.findOne({ email:email.toLowerCase() });
         if (!user) {

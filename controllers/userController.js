@@ -149,6 +149,9 @@ const userLogin = async (req, res) => {
 const resendVerificationEmail = async (req, res) => {
     try {
         const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ message: "Email is required." });
+        }
         // Find the user with the email
         const user = await userModel.findOne({ email:email.toLowerCase() });
         // Check if the user is still in the database
@@ -194,21 +197,22 @@ const forgotPassword = async (req, res) => {
         // Extract the email from the request body
         const { email } = req.body;
 
-        // Check if the email exists in the database
+        // Check if email is provided
+        if (!email) {
+            return res.status(400).json({ message: "Email is required." });
+        }
+
+        // Convert email to lowercase and check if the email exists in the database
         const user = await userModel.findOne({ email: email.toLowerCase() });
         if (!user) {
-            return res.status(404).json({
-                message: "User not found"
-            });
+            return res.status(404).json({ message: "User not found" });
         }
 
         // Generate a reset token
         const resetToken = jwt.sign({ email: user.email }, process.env.jwt_secret, {
             expiresIn: "30m",
         });
-        const resetLink = `${req.protocol}://${req.get(
-            "host"
-        )}/api/v1/reset-password/${resetToken}`;
+        const resetLink = `${req.protocol}://${req.get("host")}/api/v1/reset-password/${resetToken}`;
 
         // Send reset password email
         const mailOptions = {
@@ -216,16 +220,13 @@ const forgotPassword = async (req, res) => {
             subject: "Password Reset",
             html: forgotPasswordTemplate(resetLink, user.fullName),
         };
-        //   Send the email
+        // Send the email
         await sendMail(mailOptions);
-        //   Send a success response
-        res.status(200).json({
-            message: "Password reset email sent successfully.",
-        });
+
+        // Send a success response
+        res.status(200).json({ message: "Password reset email sent successfully." });
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        res.status(500).json({ message: error.message });
     }
 };
 
