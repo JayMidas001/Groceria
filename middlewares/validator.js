@@ -95,19 +95,21 @@ const schemas = {
         "string.base": "Address cannot be empty."
       }),
     newPassword:validator.string()
-    .pattern(new RegExp("^(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$"))
+    .pattern(new RegExp("^(?=.*[!@#$%^&*.])(?=.*[A-Z]).{8,}$"))
+    .required()
     .messages({
+      "any.required": "New password is required.",
+      "string.base": "New password must contain at least 8 characters, one capital letter, and one special character (!@#$%^&*.).",
       "string.pattern.base":
-        "New password must contain at least 8 characters, one capital letter, and one special character (!@#$%^&*).",
-        "string.base": "Password must contain at least 8 characters, one capital letter, and one special character (!@#$%^&*.).",
-      }),
+      "Password must contain at least 8 characters, one capital letter, and one special character (!@#$%^&*.).",}),
     existingPassword:validator.string()
-    .pattern(new RegExp("^(?=.*[!@#$%^&*])(?=.*[A-Z]).{8,}$"))
+    .pattern(new RegExp("^(?=.*[!@#$%^&*.])(?=.*[A-Z]).{8,}$"))
+    .required()
     .messages({
+      "any.required": "Existing password is required.",
+      "string.base": "Existing password must contain at least 8 characters, one capital letter, and one special character (!@#$%^&*.).",
       "string.pattern.base":
-        "Existing password must contain at least 8 characters, one capital letter, and one special character (!@#$%^&*).",
-        "string.base": "Password must contain at least 8 characters, one capital letter, and one special character (!@#$%^&*.).",
-      }),
+      "Existing password must contain at least 8 characters, one capital letter, and one special character (!@#$%^&*.).",}),
     description:validator.string()
     .pattern(/^[a-zA-Z0-9\s.,!?'"()&%$#@*-]{1,400}$/, 'store description')
     .max(400)
