@@ -88,20 +88,25 @@ const authenticate = async (req, res, next) => {
 	}
 };
 
-const isSuperAdmin = async (req, res, next) => {
-    try {
-      if (req.user.isSuperAdmin) {
-        next();
-      } else {
-        res.status(403).json({ message: "Unauthorized: Not an authorized personnel." });
+const isSuperAdmin = (req, res, next) => {
+  try {
+      // Ensure req.user exists before accessing properties
+      if (!req.user) {
+          return res.status(401).json({ message: 'User is not authenticated.' });
       }
-    } catch (error) {
-      res.status(500).json({
-        message: error.message,
-      });
-    }
-  };
-  
+
+      // Ensure isSuperAdmin property exists on user object
+      if (!req.user.isSuperAdmin) {
+          return res.status(403).json({ message: 'Access denied. Super admin privileges required.' });
+      }
+
+      // If the user is a super admin, allow them to proceed
+      next();
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+};
+
   module.exports = {
     authorize,
     authenticate,

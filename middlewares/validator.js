@@ -1,4 +1,4 @@
-const validator = require('@hapi/joi')
+const validator = require('joi')
 
 const schemas = {
     
@@ -24,36 +24,36 @@ const schemas = {
         "string.pattern.base": "Please provide both first and last names separated by a single space.",
         "string.base": "Full name cannot be empty.",
       }),
-    customerFirstName: validator.string()
-    .min(3)
-    .custom(value => value.trim())  // Trim leading and trailing whitespace
-    .pattern(new RegExp("^[A-Za-z]+$"))  // Ensure only alphabetic characters are allowed
-    .required()
-    .messages({
-      "any.required": "First name is required.",
-      "string.empty": "First name cannot be empty.",
-      "string.min": "First name must be at least 6 characters long.",
-      "string.pattern.base": "First name must contain only alphabetic characters.",
-      "string.base": "First name cannot be empty."
+      customerFirstName: validator.string()
+      .min(3)
+      .trim()
+      .pattern(/^[A-Za-z]+$/)
+      .required()
+      .messages({
+        "any.required": "First name is required.",
+        "string.empty": "First name cannot be empty.",
+        "string.min": "First name must be at least 3 characters long.",
+        "string.pattern.base": "First name must contain only alphabetic characters.",
+        "string.base": "First name cannot be empty."
     }),
     customerLastName: validator.string()
-    .min(3)
-    .custom(value => value.trim())  // Trim leading and trailing whitespace
-    .pattern(new RegExp("^[A-Za-z]+$"))  // Ensure only alphabetic characters are allowed
-    .required()
-    .messages({
-      "any.required": "First name is required.",
-      "string.empty": "First name cannot be empty.",
-      "string.min": "First name must be at least 6 characters long.",
-      "string.pattern.base": "First name must contain only alphabetic characters.",
-      "string.base": "First name cannot be empty."
+      .min(3)
+      .trim()
+      .pattern(/^[A-Za-z]+$/)
+      .required()
+      .messages({
+        "any.required": "Last name is required.",
+        "string.empty": "Last name cannot be empty.",
+        "string.min": "Last name must be at least 3 characters long.",
+        "string.pattern.base": "Last name must contain only alphabetic characters.",
+        "string.base": "Last name cannot be empty."
     }),
-    email:validator.string().email().required().messages({
-        "any.required": "Email is required.",
-        "string.email": "Invalid email format.",
-        "string.base": "Email cannot be empty.",
-        "string.pattern.base": "Email cannot be empty."
-      }),
+    email: Joi.string().email().required().messages({
+      "any.required": "Email is required.",
+      "string.email": "Invalid email format.",
+      "string.base": "Email cannot be empty.",
+      "string.pattern.base": "Email cannot be empty."
+  }),
     phoneNumber:validator.string()
     .length(11)
     .pattern(/^\d+$/)
@@ -150,11 +150,13 @@ const midasValidator = (validateAllFields = false) => {
       }
       const schema = validator.object(keysToValidate);
 
-      const { error } = schema.validate(req.body);
+      const { error } = schema.validate(req.body, { abortEarly: false });
 
       if (error) {
-          return res.status(400).json(error.details[0].message);
-      } else {
+        return res.status(400).json({
+            errors: error.details.map(detail => detail.message) // Return all error messages
+        });
+    } else {
           return next();
       }
   };
