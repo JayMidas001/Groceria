@@ -8,7 +8,9 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         require: true,
-        unique: true
+        unique: true,
+        lowercase: true, // Store emails in lowercase
+        trim: true, // Removes spaces before or after the email
     },
     password: {
         type: String,
