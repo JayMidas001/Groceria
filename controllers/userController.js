@@ -386,36 +386,49 @@ const getAllUsers = async(req,res)=>{
 
 const userLogOut = async (req, res) => {
     try {
+        // Check if authorization header exists
         const auth = req.headers.authorization;
+        if (!auth || !auth.startsWith('Bearer ')) {
+            return res.status(401).json({ message: 'Authorization header missing or malformed.' });
+        }
+
+        // Extract token from the authorization header
         const token = auth.split(' ')[1];
 
-        if(!token){
-            return res.status(401).json({
-                message: 'invalid token'
-            })
+        if (!token) {
+            return res.status(401).json({ message: 'Token missing in authorization header.' });
         }
-        // Verify the user's token and extract the user's email from the token
-        const { email } = jwt.verify(token, process.env.jwt_secret);
-        // Find the user by ID
-        const user = await userModel.findOne({ email:email.toLowerCase() });
+
+        // Verify the user's token
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.jwt_secret);
+        } catch (err) {
+            return res.status(401).json({ message: 'Invalid or expired token.' });
+        }
+
+        // Find the user by email
+        const { email } = decoded;
+        const user = await userModel.findOne({ email: email.toLowerCase() });
         if (!user) {
-            return res.status(404).json({
-                message: "User not found"
-            });
+            return res.status(404).json({ message: 'User not found.' });
         }
-        user.blackList.push(token);
+
+        // Add token to the blacklist (ensure `blackList` exists in user schema)
+        user.blackList = user.blackList || []; // Initialize if not present
+        if (!user.blackList.includes(token)) {
+            user.blackList.push(token); // Add token to blacklist if not already present
+        }
+
         // Save the changes to the database
         await user.save();
-        //   Send a success response
-        res.status(200).json({
-            message: "User logged out successfully."
-        });
+
+        // Send a success response
+        res.status(200).json({ message: 'User logged out successfully.' });
     } catch (error) {
-        res.status(500).json({
-            message: error.message
-        });
+        res.status(500).json({ message: error.message });
     }
-}
+};
 
 module.exports ={
     userSignUp, verifyEmail, resendVerificationEmail, userLogin, resetPassword, forgotPassword, changePassword, makeAdmin, makeSuperAdmin, getOneUser, getAllUsers, userLogOut
