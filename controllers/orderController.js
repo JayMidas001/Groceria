@@ -3,6 +3,7 @@ const Order = require('../models/orderModel');
 const userModel = require(`../models/userModel.js`)
 const merchantModel = require(`../models/merchantModel.js`)
 const productModel = require(`../models/productModel.js`)
+const mongoose = require(`mongoose`)
 const sendMail = require(`../helpers/email.js`);
 const { orderConfirmationTemplate, newOrderNotificationTemplate } = require('../helpers/html.js');
 

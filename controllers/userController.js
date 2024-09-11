@@ -17,7 +17,7 @@ const userSignUp = async (req, res) => {
         if(!fullName || !email || !password || !phoneNumber ){
             return res.status(400).json(`Please enter all fields.`)
         }
-        const emailExist = await userModel.findOne({ email });
+        const emailExist = await userModel.findOne({ email: email.toLowerCase() });
         if (emailExist) {
             return res.status(400).json(`User with email already exist.`);
         } else {

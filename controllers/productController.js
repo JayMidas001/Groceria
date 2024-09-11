@@ -2,6 +2,7 @@ const merchantModel = require(`../models/merchantModel`);
 const productModel = require(`../models/productModel`);
 const userModel = require(`../models/userModel`)
 const cloudinary = require(`../utils/cloudinary`);
+const mongoose = require(`mongoose`)
 const fs = require(`fs`);
 const path = require('path');
 
