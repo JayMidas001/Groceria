@@ -48,6 +48,9 @@ const mSchema = new mongoose.Schema({
     blackList:[]
 }, {timestamps: true})
 
+// Add case-insensitive index to the email field
+mSchema.index({ email: 1 }, { unique: true, collation: { locale: 'en', strength: 1 } });
+
 const merchantModel = mongoose.model('Merchant', mSchema);
 
 module.exports = merchantModel

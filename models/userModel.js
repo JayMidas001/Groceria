@@ -43,6 +43,9 @@ const userSchema = new mongoose.Schema({
     blackList:[]
 }, {timestamps: true})
 
+// Add case-insensitive index to the email field
+userSchema.index({ email: 1 }, { unique: true, collation: { locale: 'en', strength: 1 } });
+
 const userModel = mongoose.model('User', userSchema);
 
 module.exports = userModel
