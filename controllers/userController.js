@@ -54,6 +54,11 @@ const userSignUp = async (req, res) => {
             });
         }
     } catch (error) {
+        if (error.code === 11000) {
+            // Handle duplicate key error (E11000)
+            const duplicateField = Object.keys(error.keyPattern)[0]; // Get the duplicate field (e.g., email)
+            return res.status(400).json({ message: `A user with this ${duplicateField} already exists.` });
+        }
         res.status(500).json({
             message: error.message,
         });
