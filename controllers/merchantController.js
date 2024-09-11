@@ -25,7 +25,7 @@ const signUp = async (req, res) => {
         if(!businessName || !email || !password || !phoneNumber || !address || !description){
             return res.status(400).json(`Please enter all fields.`)
         }
-        const emailExist = await merchModel.findOne({ email });
+        const emailExist = await merchModel.findOne({ email:email.toLowerCase() });
         if (emailExist) {
             return res.status(400).json(`User with email already exist.`);
         } else {
@@ -80,7 +80,7 @@ const verifyEmail = async (req, res) => {
         // Extract the email from the verified token
         const { email } = jwt.verify(token, process.env.jwt_secret);
         // Find the user with the email
-        const user = await merchModel.findOne({ email });
+        const user = await merchModel.findOne({ email:email.toLowerCase()});
         // Check if the user is still in the database
         if (!user) {
             return res.status(404).json({
@@ -141,7 +141,7 @@ const userLogin = async (req, res) => {
                 email: existingUser.email,
             },
             process.env.jwt_secret,
-            { expiresIn: "1h" }
+            { expiresIn: "3h" }
         );
 
         res.status(200).json({
@@ -160,7 +160,7 @@ const resendVerificationEmail = async (req, res) => {
     try {
         const { email } = req.body;
         // Find the user with the email
-        const user = await merchModel.findOne({ email });
+        const user = await merchModel.findOne({ email:email.toLowerCase() });
         // Check if the user is still in the database
         if (!user) {
             return res.status(404).json({
@@ -205,7 +205,7 @@ const forgotPassword = async (req, res) => {
         const { email } = req.body;
 
         // Check if the email exists in the database
-        const user = await merchModel.findOne({ email });
+        const user = await merchModel.findOne({ email:email.toLowerCase() });
         if (!user) {
             return res.status(404).json({
                 message: "User not found"
@@ -248,7 +248,7 @@ const resetPassword = async (req, res) => {
         const { email } = jwt.verify(token, process.env.jwt_secret);
 
         // Find the user by ID
-        const user = await merchModel.findOne({ email });
+        const user = await merchModel.findOne({ email:email.toLowerCase()});
         if (!user) {
             return res.status(404).json({
                 message: "User not found",
@@ -283,7 +283,7 @@ const changePassword = async (req, res) => {
         const { email } = jwt.verify(token, process.env.jwt_secret);
 
         // Find the user by ID
-        const user = await merchModel.findOne({ email });
+        const user = await merchModel.findOne({ email:email.toLowerCase()});
         if (!user) {
             return res.status(404).json({
                 message: "User not found.",
@@ -426,7 +426,7 @@ const merchantLogOut = async (req, res) => {
         // Verify the merchant's token and extract the merchant's email from the token
         const { email } = jwt.verify(token, process.env.jwt_secret);
         // Find the merchant by ID
-        const merchant = await merchModel.findOne({ email });
+        const merchant = await merchModel.findOne({ email: email.toLowerCase()});
         if (!merchant) {
             return res.status(404).json({
                 message: "User not found"

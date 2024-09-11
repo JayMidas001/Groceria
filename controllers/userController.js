@@ -72,7 +72,7 @@ const verifyEmail = async (req, res) => {
         // Extract the email from the verified token
         const { email } = jwt.verify(token, process.env.jwt_secret);
         // Find the user with the email
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({ email:email.toLowerCase() });
         // Check if the user is still in the database
         if (!user) {
             return res.status(404).json({
@@ -150,7 +150,7 @@ const resendVerificationEmail = async (req, res) => {
     try {
         const { email } = req.body;
         // Find the user with the email
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({ email:email.toLowerCase() });
         // Check if the user is still in the database
         if (!user) {
             return res.status(404).json({
@@ -174,7 +174,7 @@ const resendVerificationEmail = async (req, res) => {
         let mailOptions = {
             email: user.email,
             subject: "Verification email",
-            html: verifyTemplate(verifyLink, user.firstName),
+            html: verifyTemplate(verifyLink, user.fullName),
         };
         // Send the the email
         await sendMail(mailOptions);
@@ -195,7 +195,7 @@ const forgotPassword = async (req, res) => {
         const { email } = req.body;
 
         // Check if the email exists in the database
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({ email: email.toLowerCase() });
         if (!user) {
             return res.status(404).json({
                 message: "User not found"
@@ -214,7 +214,7 @@ const forgotPassword = async (req, res) => {
         const mailOptions = {
             email: user.email,
             subject: "Password Reset",
-            html: forgotPasswordTemplate(resetLink, user.firstName),
+            html: forgotPasswordTemplate(resetLink, user.fullName),
         };
         //   Send the email
         await sendMail(mailOptions);
@@ -238,7 +238,7 @@ const resetPassword = async (req, res) => {
         const { email } = jwt.verify(token, process.env.jwt_secret);
 
         // Find the user by ID
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({ email:email.toLowerCase() });
         if (!user) {
             return res.status(404).json({
                 message: "User not found",
@@ -273,7 +273,7 @@ const changePassword = async (req, res) => {
         const { email } = jwt.verify(token, process.env.jwt_secret);
 
         // Find the user by ID
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({ email: email.toLowerCase() });
         if (!user) {
             return res.status(404).json({
                 message: "User not found.",
@@ -302,7 +302,7 @@ const changePassword = async (req, res) => {
         let mailOptions = {
             email: user.email,
             subject: "Password Changed",
-            html: passwordChangeTemplate(user.firstName),
+            html: passwordChangeTemplate(user.fullName),
         };
         // Send the the email
         await sendMail(mailOptions);
@@ -396,7 +396,7 @@ const userLogOut = async (req, res) => {
         // Verify the user's token and extract the user's email from the token
         const { email } = jwt.verify(token, process.env.jwt_secret);
         // Find the user by ID
-        const user = await userModel.findOne({ email });
+        const user = await userModel.findOne({ email:email.toLowerCase() });
         if (!user) {
             return res.status(404).json({
                 message: "User not found"
