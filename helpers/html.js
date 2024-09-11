@@ -226,7 +226,7 @@ const signUpTemplate = (verifyLink, fullName) => {
             <h1>Reset Your Password</h1>
           </div>
           <div class="content">
-            <p>Hello ${fullName},</p>
+            <p>Hello, ${fullName},</p>
             <p>We received a request to reset your password. If you didn't make this request, please ignore this email.</p>
             <p>Click the button below to reset your password:</p>
             <p>
@@ -298,85 +298,9 @@ const signUpTemplate = (verifyLink, fullName) => {
             <h1>Password Changed Successfully</h1>
           </div>
           <div class="content">
-            <p>Hello ${fullName},</p>
+            <p>Hello, ${fullName},</p>
             <p>We received a request to reset your password, and your password has been successfully changed.
             If you did not approve this change kindly reach out to the Admin.</p>
-            <p>Best regards,<br>Groceria Team</p>
-          </div>
-          <div class="footer">
-            <p>&copy; ${new Date().getFullYear()} Groceria. All rights reserved.</p>
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
-  };
-  
-  const orderConfirmationTemplat = (fullName, userOrderId, orderDate, items, totalPrice) => {
-    return `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Order Confirmation</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #f7f7f7;
-            margin: 0;
-            padding: 0;
-          }
-          .container {
-            max-width: 600px;
-            margin: 40px auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            background-color: #fff;
-          }
-          .header {
-            background: linear-gradient(90deg, #ff6600, #00cc66);
-            padding: 10px;
-            text-align: center;
-            border-bottom: 1px solid #ddd;
-            color: #fff;
-            border-radius: 10px 10px 0 0;
-          }
-          .content {
-            padding: 20px;
-            color: #333;
-          }
-          .footer {
-            background: #333;
-            padding: 10px;
-            text-align: center;
-            border-top: 1px solid #ddd;
-            font-size: 0.9em;
-            color: #ccc;
-            border-radius: 0 0 10px 10px;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>Order Confirmation</h1>
-          </div>
-          <div class="content">
-            <p>Hello ${fullName},</p>
-            <p>We are pleased to confirm that your order has been successfully placed. Below are the details of your order:</p>
-            <p>Order ID: ${userOrderId}</p>
-            <p>Order Date: ${orderDate}</p>
-            <p>Items:</p>
-            <ul>
-              ${items.map(item => `<li>${item.productName} - ${item.quantity}pc(s)</li>`).join('')}
-            </ul>
-            <p>Total Price: ${totalPrice}</p>
-            <p>Thank you for shopping with us!</p>
             <p>Best regards,<br>Groceria Team</p>
           </div>
           <div class="footer">
@@ -533,7 +457,7 @@ const signUpTemplate = (verifyLink, fullName) => {
                 <h1>Order Confirmation</h1>
             </div>
             <div class="content">
-                <p>Hello ${fullName},</p>
+                <p>Hello, ${fullName},</p>
                 <p>We are pleased to confirm that your order has been successfully placed. Below are the details of your order:</p>
                 <table class="order-details">
                     <thead>

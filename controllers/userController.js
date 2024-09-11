@@ -363,7 +363,7 @@ const getOneUser = async (req, res) => {
             return res.status(404).json(`User not found.`)
         }
         res.status(200).json({
-            message: `Dear ${user.firstName}, kindly find your information below:`,
+            message: `Dear ${user.fullName}, kindly find your information below:`,
             data: user
         })
     } catch (error) {
