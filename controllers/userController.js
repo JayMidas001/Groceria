@@ -269,8 +269,10 @@ const resetPassword = async (req, res) => {
 const changePassword = async (req, res) => {
     try {
         const { token } = req.params;
-        const { password, existingPassword } = req.body;
-
+        const { newPassword, existingPassword } = req.body;
+        if( !newPassword || !existingPassword ){
+            return res.status(400).json(`Please enter all fields (New Password & Existing pasword).`)
+        }
         // Verify the user's token and extract the user's email from the token
         const { email } = jwt.verify(token, process.env.jwt_secret);
 
@@ -295,7 +297,7 @@ const changePassword = async (req, res) => {
 
         // Salt and hash the new password
         const saltedRound = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, saltedRound);
+        const hashedPassword = await bcrypt.hash(newPassword, saltedRound);
 
         // Update the user's password
         user.password = hashedPassword;
@@ -310,7 +312,7 @@ const changePassword = async (req, res) => {
         await sendMail(mailOptions);
         //   Send a success response
         res.status(200).json({
-            message: "Password changed successful",
+            message: "Password changed successfully.",
         });
     } catch (error) {
         res.status(500).json({

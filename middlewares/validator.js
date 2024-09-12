@@ -48,7 +48,7 @@ const schemas = {
         "string.pattern.base": "Last name must contain only alphabetic characters.",
         "string.base": "Last name cannot be empty."
     }),
-    email: Joi.string().email().required().messages({
+    email: validator.string().email().required().messages({
       "any.required": "Email is required.",
       "string.email": "Invalid email format.",
       "string.base": "Email cannot be empty.",
@@ -102,14 +102,6 @@ const schemas = {
       "string.base": "New password must contain at least 8 characters, one capital letter, and one special character (!@#$%^&*.).",
       "string.pattern.base":
       "Password must contain at least 8 characters, one capital letter, and one special character (!@#$%^&*.).",}),
-    existingPassword:validator.string()
-    .pattern(new RegExp("^(?=.*[!@#$%^&*.])(?=.*[A-Z]).{8,}$"))
-    .required()
-    .messages({
-      "any.required": "Existing password is required.",
-      "string.base": "Existing password must contain at least 8 characters, one capital letter, and one special character (!@#$%^&*.).",
-      "string.pattern.base":
-      "Existing password must contain at least 8 characters, one capital letter, and one special character (!@#$%^&*.).",}),
     description:validator.string()
     .pattern(/^[a-zA-Z0-9\s.,!?'"()&%$#@*-]{1,400}$/, 'store description')
     .max(400)

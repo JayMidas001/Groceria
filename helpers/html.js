@@ -350,11 +350,23 @@ const signUpTemplate = (verifyLink, fullName) => {
             padding: 20px;
             color: #333;
           }
+          .order-details {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+          }
+          .order-details th, .order-details td {
+            padding: 8px;
+            border: 1px solid #ddd;
+          }
+          .order-details th {
+            text-align: left;
+            background-color: #f2f2f2;
+          }
           .footer {
             background: #333;
             padding: 10px;
             text-align: center;
-            border-top: 1px solid #ddd;
             font-size: 0.9em;
             color: #ccc;
             border-radius: 0 0 10px 10px;
@@ -370,15 +382,44 @@ const signUpTemplate = (verifyLink, fullName) => {
             <p>Hello, ${merchantName},</p>
             <p>We are pleased to inform you that a new order has been placed by ${userName}, contact information: (${userEmail}).</p>
             <p>Order Details:</p>
-            <p>Order ID: ${userOrderId}</p>
-            <p>Order Date: ${orderDate}</p>
-            <p>Items:</p>
-            <ul>
-              ${items.map(item => `<li>${item.productName} x ${item.quantity}</li>`).join('')}
-            </ul>
-            <p>Total Price: ${totalPrice}</p>
-            <p>Shipping Address:</p>
+            <table class="order-details">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Order Date</th>
+                  <th>Total Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>${userOrderId}</td>
+                  <td>${orderDate}</td>
+                  <td>₦${totalPrice}</td>
+                </tr>
+              </tbody>
+            </table>
+  
+            <h2>Items Ordered</h2>
+            <table class="order-details">
+              <thead>
+                <tr>
+                  <th>Product Name</th>
+                  <th>Quantity</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${items.map(item => `
+                  <tr>
+                    <td>${item.productName}</td>
+                    <td>${item.quantity}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+  
+            <h2>Shipping Address</h2>
             <p>${userAddress}</p>
+  
             <p>Please take necessary actions to process this order.</p>
             <p>Best regards,<br>Groceria Team</p>
           </div>
@@ -390,8 +431,7 @@ const signUpTemplate = (verifyLink, fullName) => {
       </html>
     `;
   };
-  
-  const orderConfirmationTemplate = (fullName, userOrderId, orderDate, items, totalPrice) => {
+  const orderConfirmationTemplate = (fullName, userOrderId, orderDate, items, totalAmount, deliveryCharge) => {
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -432,12 +472,26 @@ const signUpTemplate = (verifyLink, fullName) => {
             .order-details {
                 width: 100%;
                 border-collapse: collapse;
+                margin-bottom: 20px;
             }
             .order-details th, .order-details td {
                 padding: 8px;
                 border: 1px solid #ddd;
             }
             .order-details th {
+                text-align: left;
+                background-color: #f2f2f2;
+            }
+            .items-ordered {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
+            }
+            .items-ordered th, .items-ordered td {
+                padding: 8px;
+                border: 1px solid #ddd;
+            }
+            .items-ordered th {
                 text-align: left;
                 background-color: #f2f2f2;
             }
@@ -471,21 +525,49 @@ const signUpTemplate = (verifyLink, fullName) => {
                         <tr>
                             <td>${userOrderId}</td>
                             <td>${orderDate}</td>
-                            <td>${totalPrice}</td>
+                            <td>₦${totalAmount}</td>
                         </tr>
                     </tbody>
                 </table>
+
                 <h2>Items Ordered</h2>
-                <table>
+                <table class="items-ordered">
+                    <thead>
+                        <tr>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
                     <tbody>
                         ${items.map(item => `
                             <tr>
                                 <td>${item.productName}</td>
                                 <td>${item.quantity}</td>
+                                <td>₦${item.price}</td>
                             </tr>
-                        `)}
+                        `).join('')}
                     </tbody>
                 </table>
+
+                <h2>Order Summary</h2>
+                <table class="order-details">
+                    <tbody>
+                        <tr>
+                            <td>Subtotal:</td>
+                            <td>₦${totalAmount - deliveryCharge}</td>
+                        </tr>
+                        <tr>
+                            <td>Shipping Cost:</td>
+                            <td>₦${deliveryCharge}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total:</strong></td>
+                            <td><strong>₦${totalAmount}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
                 <p>Thank you for shopping with us!</p>
                 <p>Best regards,<br>Groceria Team</p>
             </div>
@@ -495,9 +577,8 @@ const signUpTemplate = (verifyLink, fullName) => {
         </div>
     </body>
     </html>
-    
     `;
-  }
-  
+}
+
     module.exports = { signUpTemplate, verifyTemplate, forgotPasswordTemplate, passwordChangeTemplate, orderConfirmationTemplate, newOrderNotificationTemplate};
     

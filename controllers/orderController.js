@@ -7,55 +7,31 @@ const mongoose = require(`mongoose`)
 const sendMail = require(`../helpers/email.js`);
 const { orderConfirmationTemplate, newOrderNotificationTemplate } = require('../helpers/html.js');
 
-// Utility function to initialize or retrieve a session-based cart
-const getSessionCart = (req) => {
-    if (!req.session.cart) {
-        req.session.cart = {
-            items: [],
-            totalPrice: 0
-        };
-    }
-    return req.session.cart;
-};
-
+const formatter = new Intl.NumberFormat('en-NG', {
+    style: 'currency',
+    currency: 'NGN',
+    minimumFractionDigits: 2
+  });
 
 const checkout = async (req, res) => {
     try {
         let userId = req.user ? req.user._id : null;
         let cart;
 
+        // Check if the user is logged in
         if (userId) {
             // Logged-in user: find the cart associated with the user
             cart = await Cart.findOne({ user: userId }).populate('items.product');
 
-            // If the cart is empty, check if there is a session cart from the guest session
+            // If the cart is empty or undefined, return a user-friendly message
             if (!cart || cart.items.length === 0) {
-                if (req.session.cart && req.session.cart.items.length > 0) {
-                    // Assign the session cart to the logged-in user
-                    cart = await Cart.create({
-                        user: userId,
-                        items: req.session.cart.items,
-                    });
-
-                }
+                return res.status(400).json({ message: "Your cart is empty. Please add items to your cart before proceeding to checkout." });
             }
         } else {
-            // Guest user: use the session cart
-            cart = req.session.cart;
-
-            // Ensure the session cart items are populated
-            if (cart && cart.items.length > 0) {
-                // Populate the products in session cart if not already populated
-                cart = await Cart.populate(cart, { path: 'items.product' });
-            }
+            return res.status(400).json({ message: "User is not authenticated. Please log in to proceed with the checkout." });
         }
 
-        // Check if the cart exists and has items
-        if (!cart || cart.items.length === 0) {
-            return res.status(400).json({ message: "Your cart is empty" });
-        }
-
-        // Filter out deleted products (items where product is null)
+        // Filter out any deleted products (items where the product is null)
         cart.items = cart.items.filter(item => item.product !== null);
 
         // If all items are deleted, return an error
@@ -64,24 +40,37 @@ const checkout = async (req, res) => {
         }
 
         // Calculate product total amount
-        let productTotal = cart.items.reduce((acc, item) => acc + item.quantity * item.price, 0)
+        let productTotal = cart.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
 
-        // Assuming a fixed delivery charge of 100
+        // Assuming a fixed delivery charge
         const deliveryCharge = 1050;
 
-        // Calculate the total amount including delivery charge
+        // Calculate the total amount including the delivery charge
         const totalAmount = productTotal + deliveryCharge;
-        await cart.calculateTotalPrice();
-        await cart.save()
+
+        // Save the cart after calculating the total price
+        await cart.save();
+
+        // Format the cart items and totals for the response
+        const formattedCart = {
+            items: cart.items.map(item => ({
+                productName: item.product.productName,
+                quantity: item.quantity,
+                price: formatter.format(item.price),
+                productImage: item.product.productImage,
+            })),
+        };
+
         res.status(200).json({
             message: "Checkout initiated",
-            productTotal,
-            deliveryCharge,
-            totalAmount,
-            cartItems: cart.items
+            cart: formattedCart,
+            productTotal: formatter.format(productTotal),
+            deliveryCharge: formatter.format(deliveryCharge),
+            totalAmount: formatter.format(totalAmount),
         });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        // Catch all other errors and return a user-friendly message
+        res.status(500).json({ message: "Something went wrong during checkout. Please try again later." });
     }
 };
 
@@ -160,17 +149,18 @@ const confirmOrder = async (req, res) => {
         // Link the order to the user
         user.orders.push(newOrder._id);
         await user.save();
-
+        
         // Clear the user's cart after saving the order
         cart.items = [];
         cart.totalPrice = 0;
         await cart.save();
 
+        
         // Send confirmation email to the user
         await sendMail({
             subject: "Order Confirmation",
             email: user.email,
-            html: orderConfirmationTemplate(user.fullName, newOrder._id, newOrder.orderDate, newOrder.items, totalAmount),
+            html: orderConfirmationTemplate(user.fullName, newOrder._id, newOrder.orderDate, newOrder.items, totalAmount, deliveryCharge),
         });
 
         // Send a separate email to each merchant with the price specific to their products
@@ -198,10 +188,31 @@ const confirmOrder = async (req, res) => {
             merchant.orders.push(newOrder._id);
             await merchant.save();
         }
+        
+        
+        const cleanOrder = {
+            user: newOrder.user,
+            items: newOrder.items.map(item => ({
+                productName: item.productName,
+                quantity: item.quantity,
+                price: formatter.format(item.price),
+                productImage: item.productImage
+            })),
+            totalAmount: formatter.format(newOrder.totalAmount),
+            customerFirstName: newOrder.customerFirstName,
+            customerLastName: newOrder.customerLastName,
+            customerAddress: newOrder.customerAddress,
+            customerPhoneNumber: newOrder.customerPhoneNumber,
+            city: newOrder.city,
+            country: newOrder.country,
+            orderStatus: newOrder.orderStatus,
+            orderDate: newOrder.orderDate,
+            _id: newOrder._id
+        };
 
         res.status(201).json({
             message: "Order placed successfully",
-            order: newOrder
+            order: cleanOrder
         });
     } catch (error) {
         console.error(error);

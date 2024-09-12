@@ -36,6 +36,7 @@ app.get("/", (req, res) => {
   res.send("Welcome to Groceria!");
 });
 
+
 app.listen(port, () => {
   console.log("App is currently Up & Running, server is listening to port:", port);
 });

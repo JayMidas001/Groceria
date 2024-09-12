@@ -6,6 +6,12 @@ const mongoose = require(`mongoose`)
 const fs = require(`fs`);
 const path = require('path');
 
+const formatter = new Intl.NumberFormat('en-NG', {
+  style: 'currency',
+  currency: 'NGN',
+  minimumFractionDigits: 2
+});
+
 // Create a new product
 const createProduct = async (req, res) => {
   try {
