@@ -31,7 +31,8 @@ const mSchema = new mongoose.Schema({
     type: String
     },
     isVerified:{
-        type:String
+        type:String,
+        default: false
     },
     isAdmin:{
         type:String,

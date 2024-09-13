@@ -48,7 +48,7 @@ const schemas = {
         "string.pattern.base": "Last name must contain only alphabetic characters.",
         "string.base": "Last name cannot be empty."
     }),
-    email: validator.string().email().required().messages({
+    email: validator.string().trim().email().required().messages({
       "any.required": "Email is required.",
       "string.email": "Invalid email format.",
       "string.base": "Email cannot be empty.",

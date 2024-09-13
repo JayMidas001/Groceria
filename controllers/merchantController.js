@@ -1,5 +1,4 @@
 const merchModel = require(`../models/merchantModel.js`)
-const orderModel = require(`../models/orderModel.js`)
 const bcrypt = require(`bcrypt`)
 const cloudinary = require(`../utils/cloudinary.js`)
 const mongoose = require(`mongoose`)
@@ -69,7 +68,7 @@ const signUp = async (req, res) => {
             const duplicateField = Object.keys(error.keyPattern)[0]; // Get the duplicate field (e.g., email)
             return res.status(400).json({ message: `A user with this ${duplicateField} already exists.` });
         }
-        res.status(500).json(error.message);
+        res.status(500).json({message: error.message});
     }
 };
 
@@ -333,57 +332,45 @@ const changePassword = async (req, res) => {
         });
     }
 };
-
-
 const updateMerchant = async (req, res) => {
     try {
-      const { merchantId } = req.params;
-      if (!mongoose.Types.ObjectId.isValid(merchantId)) {
-        return res.status(400).json({ message: 'Invalid ID format.' });}
-      const { businessName, email, phoneNumber, address, description } = req.body;
-      const file = req.files.profileImage;
-  
-      const merchant = await merchModel.findById(merchantId);
-      if (!merchant) {
-        return res.status(404).json("Merchant not found.");
-      }
-  
-      const data = {
-        businessName: businessName || merchant.businessName,
-        email: email || merchant.email,
-        phoneNumber: phoneNumber || merchant.phoneNumber,
-        address: address || merchant.address,
-        description: description || merchant.description,
-        profileImage: merchant.profileImage,
-      };
-  
-      if (file) {
-        const imagePublicId = merchant.profileImage.split('/').pop().split('.')[0];
-        await cloudinary.uploader.destroy(imagePublicId);
-  
-        const image = await cloudinary.uploader.upload(file.tempFilePath);
-        data.profileImage = image.secure_url;
-  
-        fs.unlink(file.tempFilePath, (err) => {
-          if (err) {
-            console.error("Failed to delete the file locally:", err);
-          } else {
-            console.log("File deleted locally after upload");
-          }
-        });
-      }
-  
-      const updatedMerchant = await merchModel.findByIdAndUpdate(merchantId, data, { new: true });
-      res.status(200).json({
-        message: 'Merchant profile info updated successfully.',
-        data: updatedMerchant,
-      });
+        const { merchantId } = req.params;
+        const { businessName, phoneNumber, address, description } = req.body;
+        
+        // Ensure the merchant exists
+        const merchant = await merchModel.findById(merchantId);
+        if (!merchant) {
+            return res.status(404).json({ message: 'Merchant not found' });
+        }
+
+        // If a file is uploaded, handle the file upload to Cloudinary
+        if (req.files && req.files.profileImage) {
+            const file = req.files.profileImage;
+            
+            // Upload to Cloudinary
+            const result = await cloudinary.uploader.upload(file.tempFilePath);
+
+            // Assign the new profile image URL
+            merchant.profileImage = result.secure_url;
+
+            // Delete the temp file
+            fs.unlinkSync(file.tempFilePath);
+        }
+
+        // Update other merchant details
+        merchant.businessName = businessName || merchant.businessName;
+        merchant.phoneNumber = phoneNumber || merchant.phoneNumber;
+        merchant.address = address || merchant.address;
+        merchant.description = description || merchant.description;
+
+        // Save the updated merchant
+        await merchant.save();
+
+        res.status(200).json({ message: 'Merchant profile updated successfully', data: merchant });
     } catch (error) {
-      res.status(500).json(error.message);
+        res.status(500).json({ message: error.message });
     }
-  };
-
-
+};
 
 
 const getOneMerchant = async (req, res) => {
@@ -400,7 +387,7 @@ const getOneMerchant = async (req, res) => {
             data: merchant
         })
     } catch (error) {
-        res.status(500).json(error.message)
+        res.status(500).json({message: error.message})
     }
 }
 
@@ -416,7 +403,7 @@ const getAllMerchants = async(req,res)=>{
      }
         
     } catch (error) {
-        res.status(500).json(error.message)
+        res.status(500).json({message: error.message})
     }
 }
 

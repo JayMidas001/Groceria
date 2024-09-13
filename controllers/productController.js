@@ -58,7 +58,7 @@ const createProduct = async (req, res) => {
       data: newProduct,
     });
   } catch (error) {
-    res.status(500).json(error.message);
+    res.status(500).json({message: error.message});
   }
 }; 
 
@@ -77,7 +77,7 @@ const getOneProduct = async (req, res) => {
       data: product,
     });
   } catch (error) {
-    res.status(500).json(error.message);
+    res.status(500).json({message: error.message});
   }finally {
     // Always attempt to delete the temp file after upload
     if (req.files?.productImage?.tempFilePath) {
@@ -105,7 +105,7 @@ const getAllForOneStore = async (req, res) => {
       data: merchantStore.products, // Return only products
     });
   } catch (error) {
-    res.status(500).json(error.message);
+    res.status(500).json({message:error.message});
   }
 };
 
@@ -122,7 +122,7 @@ const getAllProducts = async (req, res) => {
       data: products,
     });
   } catch (error) {
-    res.status(500).json(error.message);
+    res.status(500).json({message:error.message});
   }
 };
 
@@ -200,7 +200,7 @@ const deleteProduct = async (req, res) => {
 
     res.status(200).json({ message: "Product deleted successfully." });
   } catch (error) {
-    res.status(500).json(error.message);
+    res.status(500).json({message: error.message});
   }
 };
 

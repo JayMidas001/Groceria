@@ -334,7 +334,7 @@ const makeAdmin = async(req, res)=> {
         await user.save()
         res.status(200).json({message: `Dear ${user.fullName}, you're now an admin`, data: user})
     } catch (error) {
-        res.status(500).json(error.message)
+        res.status(500).json({message: error.message})
     }
 }
 
@@ -351,7 +351,7 @@ const makeSuperAdmin = async(req, res)=> {
         await user.save()
         res.status(200).json({message: `Dear ${user.fullName}, you're now a Super Admin`, data: user})
     } catch (error) {
-        res.status(500).json(error.message)
+        res.status(500).json({message: error.message})
     }
 }
 
@@ -369,7 +369,7 @@ const getOneUser = async (req, res) => {
             data: user
         })
     } catch (error) {
-        res.status(500).json(error.message)
+        res.status(500).json({message: error.message})
     }
 }
 

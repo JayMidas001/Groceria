@@ -244,8 +244,7 @@ const getAllOrders = async (req, res) => {
         res.status(200).json(orders);
     } catch (error) {
         res.status(500).json({
-            message: 'Failed to get orders',
-            error: error.message
+            message: error.message
         });
     }
 };
@@ -269,8 +268,7 @@ const getMerchantOrders = async (req, res) => {
       res.status(200).json({message:`Orders populated suceefully.`, data: orders});
     } catch (error) {
       res.status(500).json({
-        message: 'Failed to get orders',
-        error: error.message
+        message: error.message
       });
     }
   };

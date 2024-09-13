@@ -6,7 +6,7 @@ const midasValidator = require('../middlewares/validator')
 const { getMerchantOrders } = require('../controllers/orderController')
 const router = express.Router()
 
-router.post('/merchant-signup', midasValidator(false), upload.single('profileImage'), signUp)
+router.post('/merchant-signup', midasValidator(false), signUp)
 
 router.post(`/merchant-login`, midasValidator(false), userLogin)
 
@@ -20,7 +20,7 @@ router.post(`/merchant-changepassword/:token`, midasValidator(false), changePass
 
 router.post(`/merchant-reset-password/:token`, midasValidator(false), resetPassword)
 
-router.put('/merchant-updateinfo/:merchantId', midasValidator(false), upload.single('profileImage'), authorize, updateMerchant)
+router.put('/merchant-updateinfo/:merchantId', midasValidator(false), authorize, updateMerchant)
 
 router.get(`/merchant-getone/:merchantId`, getOneMerchant)
 

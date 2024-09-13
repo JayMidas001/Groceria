@@ -14,9 +14,13 @@ const keepServerAlive = require(`./helpers/keepServerAlive`)
 
 const app = express();
 app.use(express.json());
-app.use(bodyParser.json({ limit: "100mb" }));
-app.use(bodyParser.urlencoded({ limit: "100mb", extended: true }));
-app.use(fileUploader({ useTempFiles: true }));
+app.use(bodyParser.json({ limit: "50mb" }));
+app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
+app.use(fileUploader({
+  useTempFiles: true,
+  tempFileDir: '/tmp/',  // Temporary directory for storing files
+  limits: { fileSize: 50 * 1024 * 1024 }  // Set file size limit if needed (5MB example)
+}))
 app.use(cors({ origin: "*", credentials: true}));
 app.use(morgan("dev"));
 
@@ -25,12 +29,12 @@ app.use("/api/v1", merchantRouter);
 app.use("/api/v1", productRouter);
 app.use("/api/v1", cartRouter);
 
-keepServerAlive();
+//keepServerAlive();
 
 
-app.get('/1', (req, res) => {
-    res.send('Server is alive!');
-});
+//app.get('/1', (req, res) => {
+//    res.send('Server is alive!');
+//});
 
 app.get("/", (req, res) => {
   res.send("Welcome to Groceria!");
