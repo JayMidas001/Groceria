@@ -124,9 +124,9 @@ const viewCart = async (req, res) => {
             return res.status(400).json({ message: "User is not authenticated." });
         }
 
-        const { productId, quantity } = req.body;
-        if (!quantity || quantity <= 0) {
-            return res.status(400).json({ message: "Quantity must be a positive number." });
+        const { productId } = req.body; // We only need the productId now
+        if (!productId) {
+            return res.status(400).json({ message: "Product ID is required." });
         }
 
         const cart = await Cart.findOne({ user: userId });
@@ -139,8 +139,8 @@ const viewCart = async (req, res) => {
             return res.status(404).json({ message: "Item not found in cart." });
         }
 
-        // Increase the item quantity
-        cart.items[itemIndex].quantity += quantity;
+        // Increase the item quantity by 1
+        cart.items[itemIndex].quantity += 1;
 
         // Recalculate the total price
         cart.totalPrice = cart.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
@@ -166,62 +166,60 @@ const viewCart = async (req, res) => {
     }
 };
 
-
 const reduceItemQuantity = async (req, res) => {
-  try {
-      const userId = req.user._id;
-      if (!userId) {
-          return res.status(400).json({ message: "User is not authenticated." });
-      }
-
-      const { productId, quantity } = req.body;
-      if (!quantity || quantity <= 0) {
-          return res.status(400).json({ message: "Quantity must be a positive number." });
-      }
-
-      const cart = await Cart.findOne({ user: userId });
-      if (!cart) {
-          return res.status(404).json({ message: "Cart not found." });
-      }
-
-      const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
-      if (itemIndex === -1) {
-          return res.status(404).json({ message: "Item not found in cart." });
-      }
-
-      // Reduce the item quantity
-      cart.items[itemIndex].quantity -= quantity;
-
-      // If the quantity reaches 0 or below, remove the item from the cart
-      if (cart.items[itemIndex].quantity <= 0) {
-          cart.items.splice(itemIndex, 1);
-      }
-
-      // Recalculate the total price
-      cart.totalPrice = cart.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
-
-      await cart.save();
-
-      const formattedCart = {
-          data: {
-              items: cart.items.map(item => ({
-                  productId: item.product,
-                  productName: item.productName,
-                  quantity: item.quantity,
-                  price: formatter.format(item.price),
-                  productImage: item.productImage,
-              })),
-              totalPrice: formatter.format(cart.totalPrice),
-          },
-      };
-
-      res.status(200).json({ message: "Item quantity reduced successfully.", data: formattedCart });
-  } catch (error) {
-      res.status(500).json({ message: error.message });
-  }
-};
-
-
+    try {
+        const userId = req.user._id;
+        if (!userId) {
+            return res.status(400).json({ message: "User is not authenticated." });
+        }
+  
+        const { productId } = req.body; // Only productId is needed
+        if (!productId) {
+            return res.status(400).json({ message: "Product ID is required." });
+        }
+  
+        const cart = await Cart.findOne({ user: userId });
+        if (!cart) {
+            return res.status(404).json({ message: "Cart not found." });
+        }
+  
+        const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
+        if (itemIndex === -1) {
+            return res.status(404).json({ message: "Item not found in cart." });
+        }
+  
+        // Reduce the item quantity by 1
+        cart.items[itemIndex].quantity -= 1;
+  
+        // If the quantity reaches 0 or below, remove the item from the cart
+        if (cart.items[itemIndex].quantity <= 0) {
+            cart.items.splice(itemIndex, 1);
+        }
+  
+        // Recalculate the total price
+        cart.totalPrice = cart.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
+  
+        await cart.save();
+  
+        const formattedCart = {
+            data: {
+                items: cart.items.map(item => ({
+                    productId: item.product,
+                    productName: item.productName,
+                    quantity: item.quantity,
+                    price: formatter.format(item.price),
+                    productImage: item.productImage,
+                })),
+                totalPrice: formatter.format(cart.totalPrice),
+            },
+        };
+  
+        res.status(200).json({ message: "Item quantity reduced successfully.", data: formattedCart });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+  };
+  
 const removeItemFromCart = async (req, res) => {
 	try {
 		const userId = req.user._id;
