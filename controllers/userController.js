@@ -94,8 +94,10 @@ const verifyEmail = async (req, res) => {
         res.status(200).json({
             message: "User verified successfully",
         });
+        return res.redirect('https://group8-final-project.onrender.com/#/congrat')
     } catch (error) {
         if (error instanceof jwt.JsonWebTokenError) {
+           return res.redirect("https://group8-final-project.onrender.com/#/expired")
             return res.json({ message: "Link expired." });
         }
         res.status(500).json({
