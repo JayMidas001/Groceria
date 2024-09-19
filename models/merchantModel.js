@@ -18,11 +18,9 @@ const mSchema = new mongoose.Schema({
     },
     phoneNumber: {
         type: String,
-        require: true
     },
     address: {
         type: String,
-        require: true
     },
     description: {
     type: String
