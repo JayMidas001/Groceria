@@ -19,9 +19,9 @@ const {
 const signUp = async (req, res) => {
     try {
 
-        const { businessName, email, password, phoneNumber, address, description } = req.body;
+        const { businessName, email, password, description } = req.body;
         
-        if(!businessName || !email || !password || !phoneNumber || !address || !description){
+        if(!businessName || !email || !password || !description){
             return res.status(400).json(`Please enter all fields.`)
         }
         const emailExist = await merchModel.findOne({ email:email.toLowerCase() });
@@ -37,8 +37,6 @@ const signUp = async (req, res) => {
                 businessName,
                 email: email.toLowerCase(),
                 password: hashedPassword,
-                phoneNumber, 
-                address,
                 description
             });
 
