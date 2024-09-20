@@ -162,9 +162,7 @@ const resendVerificationEmail = async (req, res) => {
 
         // Check if the user has already been verified
         if (user.isVerified) {
-            return res.status(400).json({
-                message: "User already verified."
-            });
+            return res.redirect('https://group8-final-project.onrender.com/#/congrat')
         }
 
         const token = jwt.sign({ email: user.email }, process.env.jwt_secret, {
