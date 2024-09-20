@@ -29,12 +29,12 @@ app.use("/api/v1", merchantRouter);
 app.use("/api/v1", productRouter);
 app.use("/api/v1", cartRouter);
 
-//keepServerAlive();
+keepServerAlive();
 
 
-//app.get('/1', (req, res) => {
-//    res.send('Server is alive!');
-//});
+app.get('/1', (req, res) => {
+   res.send('Server is alive!');
+});
 
 app.get("/", (req, res) => {
   res.send("Welcome to Groceria!");
