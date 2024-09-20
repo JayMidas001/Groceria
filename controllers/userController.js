@@ -82,9 +82,7 @@ const verifyEmail = async (req, res) => {
         }
         // Check if the user has already been verified
         if (user.isVerified) {
-            return res.status(400).json({
-                message: "User already verified",
-            });
+            return res.redirect('https://group8-final-project.onrender.com/#/congrat')
         }
         // Verify the user
         user.isVerified = true;
