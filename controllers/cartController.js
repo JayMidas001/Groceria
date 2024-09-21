@@ -69,10 +69,10 @@ const addToCart = async (req, res) => {
                 productId: item.product, // replace product with productId for clarity
                 productName: item.productName,
                 quantity: item.quantity,
-                price: formatter.format(item.price),
+                price: item.price,
                 productImage: item.productImage,
               })),
-              totalPrice: formatter.format(cart.totalPrice),
+              totalPrice: cart.totalPrice,
             },
           };
 
@@ -108,7 +108,7 @@ const viewCart = async (req, res) => {
             price: formatter.format(item.price),
             productImage: item.productImage,
           })),
-          totalPrice: formatter.format(cart.totalPrice),
+          totalPrice: cart.totalPrice,
         },
       };
       res.status(200).json({ data: formattedCart });
