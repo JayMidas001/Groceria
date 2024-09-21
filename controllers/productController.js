@@ -126,6 +126,26 @@ const getAllProducts = async (req, res) => {
   }
 };
 
+
+const getTopProducts = async (req, res) => {
+  try {
+    // Fetch 9 products sorted by createdAt (newest first)
+    const products = await productModel.find().sort({ createdAt: -1 }).limit(9);
+
+    if (products.length === 0) {
+      return res.status(404).json("No products found.");
+    }
+
+    res.status(200).json({
+      message: 'Latest products found.',
+      data: products,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 // Update a product by ID
 
 const updateProduct = async (req, res) => {
@@ -277,6 +297,7 @@ module.exports = {
   getOneProduct,
   getAllForOneStore,
   getAllProducts,
+  getTopProducts,
   updateProduct,
   deleteProduct,
   searchProducts,
