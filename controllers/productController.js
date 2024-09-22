@@ -156,31 +156,31 @@ const updateProduct = async (req, res) => {
     const { productName, productPrice, productDescription } = req.body;
     
 
-    // Check if category exists
+    // Check if product exists
     const product = await productModel.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
   
-    // Update category fields
+    // Update product fields
     data = {
     productName: productName || product.productName,
     productPrice : productPrice || product.productPrice,
     productDescription : productDescription || product.productDescription
   }
-    // Update category image if new file is uploaded
+    // Update product image if new file is uploaded
     if (req.file) {
       // Upload new image to Cloudinary
       const image = await cloudinary.uploader.upload(req.files.productImage.tempFilePath);
       // Delete previous image from Cloudinary
       await cloudinary.uploader.destroy(product.productImage);
       // Update category image URL
-      product.productImage = image.secure_url;
+      data.productImage = image.secure_url;
     }
 
-    // Save updated category
+    // Save updated product
     const updatedProduct = await productModel.findByIdAndUpdate(productId, data, { new: true });
-    res.status(200).json({ message: "Category updated successfully", data: updatedProduct });
+    res.status(200).json({ message: "Product updated successfully", data: updatedProduct });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

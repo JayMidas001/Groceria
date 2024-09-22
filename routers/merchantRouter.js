@@ -26,7 +26,7 @@ router.get(`/merchant-getone/:merchantId`, getOneMerchant)
 
 router.get(`/orders-received`, authorize, getMerchantOrders)
 
-router.get(`/merchant-getall`, isSuperAdmin, getAllMerchants)
+router.get(`/merchant-getall`, getAllMerchants)
 
 router.post(`/merchant-logout`, merchantLogOut)
 
