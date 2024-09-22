@@ -82,17 +82,17 @@ const verifyEmail = async (req, res) => {
         }
         // Check if the user has already been verified
         if (user.isVerified) {
-            return res.redirect('https://group8-final-project.onrender.com/#/congrat')
+            return res.redirect('https://groceria-app.onrender.com//#/congrat')
         }
         // Verify the user
         user.isVerified = true;
         // Save the user data
         await user.save();
         // Send a success response
-        return res.redirect('https://group8-final-project.onrender.com/#/congrat')
+        return res.redirect('https://groceria-app.onrender.com//#/congrat')
     } catch (error) {
         if (error instanceof jwt.JsonWebTokenError) {
-           return res.redirect("https://group8-final-project.onrender.com/#/expired")
+           return res.redirect("https://groceria-app.onrender.com//#/expired")
         }
         res.status(500).json({
             message: error.message,
@@ -160,7 +160,7 @@ const resendVerificationEmail = async (req, res) => {
 
         // Check if the user has already been verified
         if (user.isVerified) {
-            return res.redirect('https://group8-final-project.onrender.com/#/congrat')
+            return res.redirect('https://groceria-app.onrender.com//#/congrat')
         }
 
         const token = jwt.sign({ email: user.email }, process.env.jwt_secret, {
