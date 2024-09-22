@@ -37,7 +37,7 @@ app.get('/1', (req, res) => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Welcome to Groceria!");
+  res.send("Welcome to Groceria Stores!");
 });
 
 
