@@ -115,7 +115,7 @@ const userLogin = async (req, res) => {
         if (!confirmPassword) {
             return res.status(404).json({
                 message: "Incorrect Password." });}
-        if (!existingUser.isVerified) {
+        if (existingUser.isVerified === false) {
             return res.status(400).json({
                 message:
                     "User not verified, Please check you email to verify your account.",
