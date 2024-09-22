@@ -1,4 +1,4 @@
-onst Cart = require('../models/cartModel');
+const Cart = require('../models/cartModel');
 const Order = require('../models/orderModel');
 const userModel = require(`../models/userModel.js`)
 const merchantModel = require(`../models/merchantModel.js`)
@@ -64,9 +64,9 @@ const checkout = async (req, res) => {
         res.status(200).json({
             message: "Checkout initiated",
             cart: formattedCart,
-            productTotal: productTotal,
-            deliveryCharge: deliveryCharge,
-            totalAmount: totalAmount,
+            productTotal: formatter.format(productTotal),
+            deliveryCharge: formatter.format(deliveryCharge),
+            totalAmount: formatter.format(totalAmount),
         });
     } catch (error) {
         // Catch all other errors and return a user-friendly message
@@ -195,10 +195,10 @@ const confirmOrder = async (req, res) => {
             items: newOrder.items.map(item => ({
                 productName: item.productName,
                 quantity: item.quantity,
-                price: item.price,
+                price: formatter.format(item.price),
                 productImage: item.productImage
             })),
-            totalAmount: newOrder.totalAmount,
+            totalAmount: formatter.format(newOrder.totalAmount),
             customerFirstName: newOrder.customerFirstName,
             customerLastName: newOrder.customerLastName,
             customerAddress: newOrder.customerAddress,
