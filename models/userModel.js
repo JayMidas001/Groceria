@@ -1,3 +1,4 @@
+const { boolean } = require('joi');
 const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema({
@@ -24,7 +25,7 @@ const userSchema = new mongoose.Schema({
         type: String
     },
     isVerified:{
-        type:String,
+        type:boolean,
         default: false
     },
     isAdmin:{
