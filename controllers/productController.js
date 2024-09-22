@@ -154,7 +154,7 @@ const updateProduct = async (req, res) => {
     if (!mongoose.Types.ObjectId.isValid(productId)) {
         return res.status(400).json({ message: 'Invalid ID format.' });}
     const { productName, productPrice, productDescription } = req.body;
-    
+    const file = req.files.productImage;
 
     // Check if product exists
     const product = await productModel.findById(productId);
@@ -162,22 +162,23 @@ const updateProduct = async (req, res) => {
       return res.status(404).json({ message: "Product not found" });
     }
   
-    // Update product fields
-    data = {
-    productName: productName || product.productName,
-    productPrice : productPrice || product.productPrice,
-    productDescription : productDescription || product.productDescription
-  }
+   
     // Update product image if new file is uploaded
     if (req.file) {
       // Upload new image to Cloudinary
       const image = await cloudinary.uploader.upload(req.files.productImage.tempFilePath);
       // Delete previous image from Cloudinary
       await cloudinary.uploader.destroy(product.productImage);
-      // Update category image URL
-      data.productImage = image.secure_url;
+      // Update product image URL
+      product.productImage = image.secure_url;
     }
-
+     // Update product fields
+     data = {
+      productName: productName || product.productName,
+      productPrice : productPrice || product.productPrice,
+      productDescription : productDescription || product.productDescription,
+      productImage: productImage || product.productImage
+    }
     // Save updated product
     const updatedProduct = await productModel.findByIdAndUpdate(productId, data, { new: true });
     res.status(200).json({ message: "Product updated successfully", data: updatedProduct });

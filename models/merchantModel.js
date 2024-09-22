@@ -29,7 +29,7 @@ const mSchema = new mongoose.Schema({
     type: String
     },
     isVerified:{
-        type:String,
+        type:Boolean,
         default: false
     },
     isAdmin:{

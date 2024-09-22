@@ -1,4 +1,6 @@
 const merchModel = require(`../models/merchantModel.js`)
+const productModel = require(`../models/productModel.js`)
+const orderModel = require(`../models/orderModel`)
 const bcrypt = require(`bcrypt`)
 const cloudinary = require(`../utils/cloudinary.js`)
 const mongoose = require(`mongoose`)
@@ -451,7 +453,41 @@ const merchantLogOut = async (req, res) => {
     }
 };
 
+const deleteMerchant = async (req, res) => {
+    try {
+      const { merchantId } = req.params;
+  
+      // Validate the merchantId
+      if (!mongoose.Types.ObjectId.isValid(merchantId)) {
+        return res.status(400).json({ message: "Invalid Merchant ID format." });
+      }
+  
+      // Find the merchant by ID
+      const merchant = await merchantModel.findById(merchantId);
+      if (!merchant) {
+        return res.status(404).json({ message: "Merchant not found." });
+      }
+  
+      // Delete products and orders related to the merchant
+       await productModel.deleteMany({ _id: { $in: merchant.products } });
+       await orderModel.deleteMany({ _id: { $in: merchant.orders } });
+  
+      // Remove merchant's profile image from Cloudinary (if applicable)
+      if (merchant.profileImage) {
+        await cloudinary.uploader.destroy(merchant.profileImage);
+      }
+  
+      // Delete the merchant
+      await merchantModel.findByIdAndDelete(merchantId);
+  
+      // Respond with a success message
+      res.status(200).json({ message: "Merchant deleted successfully." });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
 
 module.exports ={
-    signUp, verifyEmail, resendVerificationEmail, userLogin, resetPassword, forgotPassword, changePassword, updateMerchant, getOneMerchant, getAllMerchants, merchantLogOut
+    signUp, verifyEmail, resendVerificationEmail, userLogin, resetPassword, forgotPassword, changePassword, updateMerchant, getOneMerchant, getAllMerchants, merchantLogOut, deleteMerchant
 }

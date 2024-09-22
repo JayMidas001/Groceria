@@ -96,7 +96,7 @@ const isSuperAdmin = (req, res, next) => {
       }
 
       // Ensure isSuperAdmin property exists on user object
-      if (!req.user.isSuperAdmin) {
+      if (req.user.isSuperAdmin === false) {
           return res.status(403).json({ message: 'Access denied. Super admin privileges required.' });
       }
 
