@@ -151,41 +151,52 @@ const getTopProducts = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     const { productId } = req.params;
+    
+    // Validate product ID format
     if (!mongoose.Types.ObjectId.isValid(productId)) {
-        return res.status(400).json({ message: 'Invalid ID format.' });}
+      return res.status(400).json({ message: 'Invalid ID format.' });
+    }
+
     const { productName, productPrice, productDescription } = req.body;
-    const file = req.files.productImage;
 
     // Check if product exists
     const product = await productModel.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-  
-   
-    // Update product image if new file is uploaded
+
+    let productImage = product.productImage; // Initialize with the existing image
+
+    // Update product image if a new file is uploaded
     if (req.file) {
       // Upload new image to Cloudinary
-      const image = await cloudinary.uploader.upload(req.files.productImage.tempFilePath);
-      // Delete previous image from Cloudinary
-      await cloudinary.uploader.destroy(product.productImage);
+      const image = await cloudinary.uploader.upload(req.file.path); // Ensure req.file is being used
+      // Delete previous image from Cloudinary (if exists)
+      if (product.productImage) {
+        await cloudinary.uploader.destroy(product.productImage);
+      }
       // Update product image URL
-      product.productImage = image.secure_url;
+      productImage = image.secure_url;
     }
-     // Update product fields
-     data = {
+
+    // Update product fields
+    const data = {
       productName: productName || product.productName,
-      productPrice : productPrice || product.productPrice,
-      productDescription : productDescription || product.productDescription,
-      productImage: productImage || product.productImage
-    }
+      productPrice: productPrice || product.productPrice,
+      productDescription: productDescription || product.productDescription,
+      productImage: productImage, // Use updated or existing image
+    };
+
     // Save updated product
     const updatedProduct = await productModel.findByIdAndUpdate(productId, data, { new: true });
+    
+    // Respond with success
     res.status(200).json({ message: "Product updated successfully", data: updatedProduct });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // Delete a product by ID
 const deleteProduct = async (req, res) => {

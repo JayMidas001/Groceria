@@ -88,8 +88,28 @@ const authenticate = async (req, res, next) => {
 	}
 };
 
-const isSuperAdmin = (req, res, next) => {
+const isSuperAdmin = async (req, res, next) => {
   try {
+    const auth = req.headers.authorization;
+		if (!auth) {
+			return res.status(401).json({ message: 'Authorization required' });
+		}
+
+		const token = auth.split(' ')[1];
+		if (!token) {
+			return res.status(401).json({ message: 'Action requires sign-in. Please log in to continue.' });
+		}
+
+		const decodedToken = jwt.verify(token, process.env.jwt_secret);
+		const user = await userModel.findById(decodedToken.userId);
+		if (!user) {
+			return res.status(404).json({ message: 'Authentication Failed: User not found' });
+		}
+    // Check if the token is blacklisted
+    if (user.blackList && user.blackList.includes(token)) {
+      return res.status(401).json({ message: 'Token has been blacklisted. Please log in again.' });
+  }
+		req.user = user;
       // Ensure req.user exists before accessing properties
       if (!req.user) {
           return res.status(401).json({ message: 'User is not authenticated.' });
