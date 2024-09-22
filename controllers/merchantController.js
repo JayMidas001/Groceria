@@ -463,7 +463,7 @@ const deleteMerchant = async (req, res) => {
       }
   
       // Find the merchant by ID
-      const merchant = await merchantModel.findById(merchantId);
+      const merchant = await merchModel.findById(merchantId);
       if (!merchant) {
         return res.status(404).json({ message: "Merchant not found." });
       }
