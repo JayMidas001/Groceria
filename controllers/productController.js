@@ -152,31 +152,35 @@ const updateProduct = async (req, res) => {
   try {
     const { productId } = req.params;
     
-    // Validate product ID format
+    // Validate the product ID
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       return res.status(400).json({ message: 'Invalid ID format.' });
     }
 
     const { productName, productPrice, productDescription } = req.body;
 
-    // Check if product exists
+    // Check if the product exists
     const product = await productModel.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    let productImage = product.productImage; // Initialize with the existing image
+    let productImage = product.productImage; // Default to the existing image
 
-    // Update product image if a new file is uploaded
-    if (req.file) {
-      // Upload new image to Cloudinary
-      const image = await cloudinary.uploader.upload(req.file.path); // Ensure req.file is being used
-      // Delete previous image from Cloudinary (if exists)
+    // Check if the new image file is uploaded
+    if (req.files && req.files.productImage) {
+      const file = req.files.productImage; // Accessing the uploaded file
+
+      // Upload the new image to Cloudinary
+      const uploadedImage = await cloudinary.uploader.upload(file.tempFilePath);
+
+      // If product has an existing image, delete it from Cloudinary
       if (product.productImage) {
         await cloudinary.uploader.destroy(product.productImage);
       }
-      // Update product image URL
-      productImage = image.secure_url;
+
+      // Update productImage with the new Cloudinary URL
+      productImage = uploadedImage.secure_url;
     }
 
     // Update product fields
@@ -184,13 +188,13 @@ const updateProduct = async (req, res) => {
       productName: productName || product.productName,
       productPrice: productPrice || product.productPrice,
       productDescription: productDescription || product.productDescription,
-      productImage: productImage, // Use updated or existing image
+      productImage: productImage, // Updated image or existing one
     };
 
-    // Save updated product
+    // Save the updated product in the database
     const updatedProduct = await productModel.findByIdAndUpdate(productId, data, { new: true });
-    
-    // Respond with success
+
+    // Respond with the updated product details
     res.status(200).json({ message: "Product updated successfully", data: updatedProduct });
   } catch (error) {
     res.status(500).json({ message: error.message });

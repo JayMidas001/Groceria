@@ -478,7 +478,7 @@ const deleteMerchant = async (req, res) => {
       }
   
       // Delete the merchant
-      await merchantModel.findByIdAndDelete(merchantId);
+      await merchModel.findByIdAndDelete(merchantId);
   
       // Respond with a success message
       res.status(200).json({ message: "Merchant deleted successfully." });
