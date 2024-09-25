@@ -5,8 +5,8 @@
   "scripts": {
     "start": "nodemon server.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["groceria", "online shopping", "grocery shopping", "nigerian online stores"],
+  "author": "Jay Midas",
   "license": "ISC",
   "description": "",
   "dependencies": {
